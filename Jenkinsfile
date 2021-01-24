@@ -49,15 +49,20 @@ pipeline {
             }
         }
         stage("Deploy")  {
-            if(BRANCH_NAME == 'master') {
-                when {
-                    expression {
-                        params.DEPLOY == 'yes'
+            when {
+                expression {
+                    params.DEPLOY == 'yes'
+                    if(BRANCH_NAME == 'master'){
+                        branch 'master'
                     }
-                    branch 'master'
+                    if(BRANCH_NAME == 'main'){
+                        branch 'main'
+                    }
                 }
-                steps {
-                    script {
+            }
+            steps {
+                script {
+                    if(BRANCH_NAME == 'master'){
                         sshPublisher (
                             publishers: [
                                 sshPublisherDesc(
@@ -66,32 +71,6 @@ pipeline {
                                 transfers: [
                                     sshTransfer(
                                         execCommand: "cd /home/devaja/app; docker-compose up -d",
-                                        execTimeout: 1200000
-                                    )
-                                ] 
-                                )
-                            ]
-                        )
-                    }
-                }
-            }
-            if(BRANCH_NAME == 'main') {
-                when {
-                    expression {
-                        params.DEPLOY == 'yes'
-                    }
-                    branch 'main'
-                }
-                steps {
-                    script {
-                        sshPublisher (
-                            publishers: [
-                                sshPublisherDesc(
-                                configName: 'ProdAja',
-                                verbose: false,
-                                transfers: [
-                                    sshTransfer(
-                                        execCommand: "cd /home/prodaja/app; docker-compose up -d",
                                         execTimeout: 1200000
                                     )
                                 ] 
