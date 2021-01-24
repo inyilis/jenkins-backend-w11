@@ -52,12 +52,6 @@ pipeline {
             when {
                 expression {
                     params.DEPLOY == 'yes'
-                    if(BRANCH_NAME == 'master'){
-                        branch 'master'
-                    }
-                    if(BRANCH_NAME == 'main'){
-                        branch 'main'
-                    }
                 }
             }
             steps {
