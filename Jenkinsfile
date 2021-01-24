@@ -8,8 +8,8 @@ pipeline {
 
     parameters {
         string(name: 'DOCKERHUB', defaultValue: "${image_name}", description: 'by Inyilis Punya')
-        booleanParam(name: 'RUNTEST', defaultValue: 'false', description: 'Testing Image')
-        choice(name: 'DEPLOY', choices: ['dev', 'prod'], description: 'Pilih deploy kemana?')
+        booleanParam(name: 'RUNTEST', defaultValue: 'false', description: 'Testing image')
+        choice(name: 'DEPLOY', choices: ['yes', 'no'], description: 'Build pakai param')
     }
 
     stages {
@@ -48,55 +48,57 @@ pipeline {
                 }
             }
         }
-        stage("Deploy Dev")  {
-            when {
-                expression {
-                    params.DEPLOY == 'dev'
+        stage("Deploy")  {
+            if(BRANCH_NAME == 'master') {
+                when {
+                    expression {
+                        params.DEPLOY == 'yes'
+                    }
                     branch 'master'
                 }
-            }
-            steps {
-                script {
-                    sshPublisher (
-                        publishers: [
-                            sshPublisherDesc(
-                               configName: 'DevAja',
-                               verbose: false,
-                               transfers: [
-                                   sshTransfer(
-                                       execCommand: "cd /home/devaja/app; docker-compose up -d",
-                                       execTimeout: 1200000
-                                   )
-                               ] 
-                            )
-                        ]
-                    )
+                steps {
+                    script {
+                        sshPublisher (
+                            publishers: [
+                                sshPublisherDesc(
+                                configName: 'DevAja',
+                                verbose: false,
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: "cd /home/devaja/app; docker-compose up -d",
+                                        execTimeout: 1200000
+                                    )
+                                ] 
+                                )
+                            ]
+                        )
+                    }
                 }
             }
-        }
-        stage("Deploy Prod")  {
-            when {
-                expression {
-                    params.DEPLOY == 'prod'
+            if(BRANCH_NAME == 'main') {
+                when {
+                    expression {
+                        params.DEPLOY == 'yes'
+                    }
                     branch 'main'
                 }
-            }
-            steps {
-                script {
-                    sshPublisher (
-                        publishers: [
-                            sshPublisherDesc(
-                               configName: 'ProdAja',
-                               verbose: false,
-                               transfers: [
-                                   sshTransfer(
-                                       execCommand: "cd /home/prodaja/app; docker-compose up -d",
-                                       execTimeout: 1200000
-                                   )
-                               ] 
-                            )
-                        ]
-                    )
+                steps {
+                    script {
+                        sshPublisher (
+                            publishers: [
+                                sshPublisherDesc(
+                                configName: 'ProdAja',
+                                verbose: false,
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: "cd /home/prodaja/app; docker-compose up -d",
+                                        execTimeout: 1200000
+                                    )
+                                ] 
+                                )
+                            ]
+                        )
+                    }
                 }
             }
         }
