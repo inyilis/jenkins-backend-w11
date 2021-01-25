@@ -61,10 +61,26 @@ pipeline {
                             publishers: [
                                 sshPublisherDesc(
                                 configName: 'DevAja',
-                                verbose: false,
+                                verbose: true,
                                 transfers: [
                                     sshTransfer(
                                         execCommand: "cd /home/devaja/app; docker-compose up -d",
+                                        execTimeout: 1200000
+                                    )
+                                ] 
+                                )
+                            ]
+                        )
+                    }
+                    if(BRANCH_NAME == 'main'){
+                        sshPublisher (
+                            publishers: [
+                                sshPublisherDesc(
+                                configName: 'ProdAja',
+                                verbose: true,
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: "cd /home/prodaja/app; docker-compose up -d",
                                         execTimeout: 1200000
                                     )
                                 ] 
