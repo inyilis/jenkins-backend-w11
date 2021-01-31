@@ -76,11 +76,11 @@ pipeline {
                         sshPublisher (
                             publishers: [
                                 sshPublisherDesc(
-                                configName: 'k8s',
+                                configName: 'ProdAja',
                                 verbose: true,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: "cd /home/inyil/app; kubectl apply -f prod.yml",
+                                        execCommand: "docker pull ${image_name}; cd /home/prodaja/app; docker-compose up -d",
                                         execTimeout: 1200000
                                     )
                                 ] 
