@@ -23,7 +23,7 @@ pipeline {
         stage("Build docker image")  {
             steps {
                 script {
-                    builder = docker.build("${image_name}")
+                    builder = docker.build(image_name, "--no-cache .")
                 }
             }
         }
@@ -80,7 +80,7 @@ pipeline {
                                 verbose: true,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: "cd /home/inyil/app; sudo kubectl apply -f prod.yml",
+                                        execCommand: "cd /home/inyil/app; kubectl apply -f prod.yml",
                                         execTimeout: 1200000
                                     )
                                 ] 
